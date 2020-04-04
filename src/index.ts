@@ -1,25 +1,61 @@
 import postcss, { Rule } from 'postcss'
-import parser, { Selectors, Selector, Root, Node } from 'postcss-selector-parser'
+import parser, { Root, Node, Container, Options as PspOptions } from 'postcss-selector-parser'
+import invariant from 'tiny-invariant'
 
-interface Options {
-  before: any[]
-  after: any[]
+interface StringReplace {
+  type: 'string'
+  replacer: (raw: string) => string
+  options?: Partial<PspOptions>
 }
 
+type PspMethods =
+  | 'walk'
+  | 'walkAttributes'
+  | 'walkClasses'
+  | 'walkCombinators'
+  | 'walkComments'
+  | 'walkIds'
+  | 'walkNesting'
+  | 'walkPseudos'
+  | 'walkTags'
+
+type SelectorReplace = {
+  type: PspMethods
+  replacer: (node: Node) => boolean | void
+  options?: Partial<PspOptions>
+}
+
+type Options = StringReplace | SelectorReplace
+
 const replacer = postcss.plugin('css-replace-postcss-plugin', (opts?: Options) => {
+  const stringReplace = (selector: string): string => {
+    invariant(opts, 'Expects options for postcss-rename-selector')
+    invariant(opts.type == 'string', 'Expects type to be string')
+    return opts.replacer(selector)
+  }
+
   const transform = (selectors: Root) => {
-    selectors.walk((selector: Node) => {
-      selector.value = '.ant-' + selector
-    })
+    invariant(opts, 'Expects options for postcss-rename-selector')
+    invariant(opts.type !== 'string', 'Expects type to be walk')
+
+    selectors[opts.type](opts.replacer)
   }
 
   const visitor = (atRule: Rule, index: number): any => {
     const rawSelectors = atRule.selector
-    const transformed = parser(transform).processSync(rawSelectors, { lossless: false })
-    atRule.selector = transformed
+    invariant(opts, 'Expects options for postcss-rename-selector')
+    const { options } = opts
+    if (opts.type === 'string') {
+      const transformed = stringReplace(atRule.selector)
+      atRule.selector = transformed
+    } else {
+      const transformed = parser(transform).processSync(rawSelectors, options)
+      atRule.selector = transformed
+    }
   }
 
   return (css) => {
+    if (!opts) return
     css.walkRules(visitor)
   }
 })
