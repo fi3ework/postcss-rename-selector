@@ -1,27 +1,77 @@
-# TSDX Bootstrap
+# postcss-rename-selector
 
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+A PostCSS plugin for modify CSS selector flexible.
 
-## Local Development
+## Usage
 
-Below is a list of commands you will probably find useful.
+Plugin support two ways to modify selectors. In raw mode, you can return a new string from original selector string. In ast mode, you can modify the AST to get a generated selector string.
 
-### `npm start` or `yarn start`
+### raw mode
 
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
+In this mode, type should be fixed to `string`. Argument `raw` is the raw selector string, and the selector will use the returned new string.
 
-<img src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif" width="600" />
+```tsx
+import postcss from 'postcss'
+import { replacer } from '../src'
 
-Your library will be rebuilt if you make edits.
+module.exports = {
+  plugins: [
+    replacer({
+      type: 'string',
+      replacer: (raw) => {
+        return raw.replace('.b', '.ant-b')
+      },
+    }),
+  ],
+}
 
-### `npm run build` or `yarn build`
+// in 👇
+// .a, .b, .c { color: red };
 
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
+// out 👇
+// .a, .ant-b, .c { color: red };
+```
 
-<img src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif" width="600" />
+### AST mode
 
-### `npm test` or `yarn test`
+Based on [postcss-selector-parser](https://github.com/postcss/postcss-selector-parser/blob/master/API.md), `type` could be `each`, `walk`, `walkAttributes`, `walkClasses`, `walkCombinators`, `walkComments`, `walkIds`, `walkNesting`, `walkPseudos`, `walkTags`. Modify node on the ast, and new string will be generated after modification.
 
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.
+```tsx
+import postcss from 'postcss'
+import { replacer } from '../src'
+
+module.exports = {
+  plugins: [
+    replacer({
+      type: 'string',
+      replacer: (node) => {
+        const value = node.value
+        if (!value) return
+        node.value = value.startsWith('ant-') ? value.slice(4) : value
+      },
+    }),
+  ],
+}
+
+// in 👇
+
+// .ant-a,
+// .ant-b,
+// .c,
+// .ant-d {
+//   color: red
+// };
+
+// out 👇
+
+// .a,
+// .b,
+// .c,
+// .d {
+//   color: red
+// };
+```
+
+## License
+
+MIT

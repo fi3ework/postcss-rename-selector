@@ -74,7 +74,7 @@ describe('selector replace', () => {
     ]).process(
       `.ant-a,
 .ant-b,
-.c
+.c,
 .ant-d {
   color: red
 };`,
@@ -84,7 +84,7 @@ describe('selector replace', () => {
     )
     expect(result.css).toEqual(`.a,
 .b,
-.c
+.c,
 .d {
   color: red
 };`)
