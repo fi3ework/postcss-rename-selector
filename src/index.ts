@@ -1,5 +1,5 @@
 import postcss, { Rule } from 'postcss'
-import parser, { Root, Node, Container, Options as PspOptions } from 'postcss-selector-parser'
+import parser, { Root, Node, Options as PspOptions } from 'postcss-selector-parser'
 import invariant from 'tiny-invariant'
 
 interface StringReplace {
