@@ -1,1 +1,1 @@
-export { antdScopeReplacer } from './antd'
+export { antdReplacer } from './antd'

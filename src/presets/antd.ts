@@ -1,6 +1,7 @@
 import parser, { Node } from 'postcss-selector-parser'
+import { SelectorReplace } from '../index'
 
-export function antdScopeReplacer(node: Node) {
+export function antdScopeReplacerFn(node: Node) {
   if (node.type === 'selector') {
     const firstAntClassNodeIndex = node.nodes.findIndex((n) => {
       return n.type === 'class' && n.value.startsWith('ant-')
@@ -9,16 +10,21 @@ export function antdScopeReplacer(node: Node) {
 
     // preserve line break
     const firstAntClassNode = node.nodes[firstAntClassNodeIndex]
+    const prevNode = node.nodes[firstAntClassNodeIndex - 1]
     const before = firstAntClassNode.rawSpaceBefore
     firstAntClassNode.setPropertyWithoutEscape('rawSpaceBefore', '')
 
-    const universal = parser.universal({
-      value: '*',
-      spaces: {
-        before: before,
-        after: '',
-      },
-    })
+    const toInsert = []
+    if (firstAntClassNodeIndex === 0 || prevNode.type === 'combinator') {
+      const universal = parser.universal({
+        value: '*',
+        spaces: {
+          before: before,
+          after: '',
+        },
+      })
+      toInsert.push(universal)
+    }
 
     const attr = parser.attribute({
       attribute: 'class',
@@ -27,6 +33,13 @@ export function antdScopeReplacer(node: Node) {
       raws: {},
     })
 
-    firstAntClassNode.parent!.nodes.splice(firstAntClassNodeIndex, 0, universal, attr)
+    toInsert.push(attr)
+
+    firstAntClassNode.parent!.nodes.splice(firstAntClassNodeIndex, 0, ...toInsert)
   }
+}
+
+export const antdReplacer: SelectorReplace = {
+  type: 'each',
+  replacer: antdScopeReplacerFn,
 }

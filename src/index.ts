@@ -2,7 +2,7 @@ import postcss, { Rule } from 'postcss'
 import parser, { Root, Node, Container, Options as PspOptions } from 'postcss-selector-parser'
 import invariant from 'tiny-invariant'
 
-interface StringReplace {
+export interface StringReplace {
   type: 'string'
   replacer: (raw: string) => string
   options?: Partial<PspOptions>
@@ -20,7 +20,7 @@ type PspMethods =
   | 'walkPseudos'
   | 'walkTags'
 
-type SelectorReplace = {
+export interface SelectorReplace {
   type: PspMethods
   replacer: (node: Node) => boolean | void
   options?: Partial<PspOptions>
