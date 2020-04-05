@@ -1,0 +1,1 @@
+export { antdScopeReplacer } from './antd'

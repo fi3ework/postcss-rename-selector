@@ -90,4 +90,59 @@ describe('selector replace', () => {
   color: currentColor;
 }`)
   })
+
+  it('scope antd 4', async () => {
+    const result = await postcss([
+      replacer({
+        type: 'each',
+        replacer: function antdScopeReplacer(node: Node) {
+          if (node.type === 'selector') {
+            const firstAntClassNodeIndex = node.nodes.findIndex((n) => {
+              return n.type === 'class' && n.value.startsWith('ant-')
+            })
+            if (firstAntClassNodeIndex < 0) return
+
+            // preserve line break
+            const firstAntClassNode = node.nodes[firstAntClassNodeIndex]
+            const before = firstAntClassNode.rawSpaceBefore
+            firstAntClassNode.setPropertyWithoutEscape('rawSpaceBefore', '')
+            console.log(firstAntClassNodeIndex)
+
+            const universal = parser.universal({
+              value: '*',
+              spaces: {
+                before: before,
+                after: '',
+              },
+            })
+
+            const attr = parser.attribute({
+              attribute: 'class',
+              operator: '*=',
+              value: `"ant-"`,
+              raws: {},
+            })
+
+            firstAntClassNode.parent!.nodes.splice(firstAntClassNodeIndex, 0, universal, attr)
+          }
+        },
+      }),
+    ]).process(
+      `form .has-feedback .ant-input {
+        padding-right: 30px;
+      }
+      form .has-feedback .ant-input-affix-wrapper .ant-input-suffix {
+        padding-right: 18px;
+      }`,
+      {
+        from: undefined,
+      }
+    )
+    expect(result.css).toEqual(`form .has-feedback *[class*="ant-"].ant-input {
+        padding-right: 30px;
+      }
+      form .has-feedback *[class*="ant-"].ant-input-affix-wrapper .ant-input-suffix {
+        padding-right: 18px;
+      }`)
+  })
 })

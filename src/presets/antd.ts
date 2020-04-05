@@ -2,12 +2,13 @@ import parser, { Node } from 'postcss-selector-parser'
 
 export function antdScopeReplacer(node: Node) {
   if (node.type === 'selector') {
-    const firstAntClassNode = node.nodes.filter((n) => {
+    const firstAntClassNodeIndex = node.nodes.findIndex((n) => {
       return n.type === 'class' && n.value.startsWith('ant-')
-    })[0]
-    if (!firstAntClassNode) return
+    })
+    if (firstAntClassNodeIndex < 0) return
 
     // preserve line break
+    const firstAntClassNode = node.nodes[firstAntClassNodeIndex]
     const before = firstAntClassNode.rawSpaceBefore
     firstAntClassNode.setPropertyWithoutEscape('rawSpaceBefore', '')
 
@@ -26,6 +27,6 @@ export function antdScopeReplacer(node: Node) {
       raws: {},
     })
 
-    firstAntClassNode.parent!.nodes.unshift(universal, attr)
+    firstAntClassNode.parent!.nodes.splice(firstAntClassNodeIndex, 0, universal, attr)
   }
 }

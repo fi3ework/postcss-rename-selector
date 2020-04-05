@@ -62,3 +62,4 @@ const replacer = postcss.plugin('css-replace-postcss-plugin', (opts?: Options) =
 })
 
 export { replacer }
+export * as presets from './presets'
