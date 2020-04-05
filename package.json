@@ -1,6 +1,6 @@
 {
   "name": "postcss-rename-selector",
-  "version": "0.1.0-beta.4",
+  "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
