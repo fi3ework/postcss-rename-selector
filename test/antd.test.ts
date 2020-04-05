@@ -1,6 +1,5 @@
 import postcss from 'postcss'
 import { replacer } from '../src'
-import parser, { Node } from 'postcss-selector-parser'
 import { antdReplacer } from '../src/presets/antd'
 
 describe('selector replace', () => {

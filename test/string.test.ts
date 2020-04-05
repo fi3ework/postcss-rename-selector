@@ -58,7 +58,7 @@ describe('string replace', () => {
       replacer({
         type: 'string',
         replacer: (raw) => {
-          return raw.replace(/(.ant-)(.?)([ |,|\{]?)/gm, ($0, $1, $2, $3) => {
+          return raw.replace(/(.ant-)(.?)([ |,|{]?)/gm, ($0, $1, $2, $3) => {
             return `.${$2}${$3}`
           })
         },

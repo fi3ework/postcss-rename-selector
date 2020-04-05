@@ -1,5 +1,5 @@
 import postcss, { Rule } from 'postcss'
-import parser, { Root, Node, Container, Options as PspOptions } from 'postcss-selector-parser'
+import parser, { Root, Node, Options as PspOptions } from 'postcss-selector-parser'
 import invariant from 'tiny-invariant'
 
 export interface StringReplace {
@@ -31,7 +31,7 @@ type Options = StringReplace | SelectorReplace
 const replacer = postcss.plugin('css-replace-postcss-plugin', (opts?: Options) => {
   const stringReplace = (selector: string): string => {
     invariant(opts, 'Expects options for postcss-rename-selector')
-    invariant(opts.type == 'string', 'Expects type to be string')
+    invariant(opts.type === 'string', 'Expects type to be string')
     return opts.replacer(selector)
   }
 

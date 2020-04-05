@@ -46,5 +46,8 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
+  },
+  "resolutions": {
+    "tsdx/prettier": "^2.0.2"
   }
 }
