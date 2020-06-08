@@ -4,7 +4,7 @@ A PostCSS plugin for modify CSS selector flexible.
 
 ## Usage
 
-Plugin support two ways to modify selectors. In raw mode, you can return a new string from original selector string. In ast mode, you can modify the AST to get a generated selector string.
+Plugin support two ways to modify selectors. In raw mode, you can return a new string from original selector string. In AST mode, you can modify the AST to get a generated selector string.
 
 ### raw mode
 
@@ -12,7 +12,7 @@ In this mode, type should be fixed to `string`. Argument `raw` is the raw select
 
 ```tsx
 import postcss from 'postcss'
-import { replacer } from '../src'
+import { replacer } from 'postcss-rename-selector'
 
 module.exports = {
   plugins: [
@@ -34,11 +34,11 @@ module.exports = {
 
 ### AST mode
 
-Based on [postcss-selector-parser](https://github.com/postcss/postcss-selector-parser/blob/master/API.md), `type` could be `each`, `walk`, `walkAttributes`, `walkClasses`, `walkCombinators`, `walkComments`, `walkIds`, `walkNesting`, `walkPseudos`, `walkTags`. Modify node on the ast, and new string will be generated after modification.
+Based on [postcss-selector-parser](https://github.com/postcss/postcss-selector-parser/blob/master/API.md), `type` could be `each`, `walk`, `walkAttributes`, `walkClasses`, `walkCombinators`, `walkComments`, `walkIds`, `walkNesting`, `walkPseudos`, `walkTags`. Modify node on the AST, and new string will be generated after modification.
 
 ```tsx
 import postcss from 'postcss'
-import { replacer } from '../src'
+import { replacer } from 'postcss-rename-selector'
 
 module.exports = {
   plugins: [
